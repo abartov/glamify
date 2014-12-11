@@ -1,0 +1,16 @@
+%h1 GLAMify
+%p Welcome to GLAMify! :)
+%p This tool will suggest media (images etc.) from a given Commons category for you to add to articles on Wikipedia in the language you select, based on existing usage of media from that category on another Wikipedia language.
+= form_tag glamify_results_path, method: :get do
+  %p
+    = 'Source language Wikipedia:'
+    = text_field_tag :src, 'en'
+  %p
+    = 'Target language Wikipedia:'
+    = text_field_tag :target, nil, placeholder: 'two-letter language code of your Wikipedia'
+  %p
+    = 'Commons category name:'
+    = text_field_tag :cat, nil, placeholder: 'Images from the British Museum'
+  = submit_tag 'Feed into Abulafia!'
+
+
