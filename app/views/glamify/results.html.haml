@@ -1,5 +1,12 @@
-%h1 Glamify#results
-%p Find me in app/views/glamify/results.html.haml
+%h1 GLAMify - suggested images to add to articles by interwiki
+%h2
+  
+- @results.each do |sug|
+  %p
+    = link_to "#{sug[:article]}", "https://#{@target}.wikipedia.org/wiki/#{sug[:article]}"
+    = "<-- "
+    = link_to "#{sug[:media]}", "https://commons.wikimedia.org/wiki/#{sug[:media]}"
 
-- @suggestions_for_target.each do |sug|
-  %p= "#{sug[:article]} <-- #{sug[:media]}"
+%hr
+%p
+  != "GLAMify - hosted by the <a href=\"https://tools.wmflabs.org\">Wikimedia Tool Labs</a> - code on <a href=\"https://github.com/abartov/glamify\">GitHub</a>"

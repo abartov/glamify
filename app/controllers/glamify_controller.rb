@@ -17,6 +17,9 @@ class GlamifyController < ApplicationController
       redirect_to :action => :index
     else
       @results = glamify(params[:src], params[:target], params[:cat])
+      @target = params[:target]
+      @src = params[:src]
+      @cat = params[:cat]
     end
   end
 
@@ -26,7 +29,7 @@ class GlamifyController < ApplicationController
 
     all_items = grab_media_items(mw[:commons], cat) # SEE ALSO: http://commonscat.tumblr.com/ :)
     used_items = find_media_usage(all_items, src, mw[:commons])
-    @suggestions_for_target = make_suggestions(used_items, src, target, mw)
+    return make_suggestions(used_items, src, target, mw)
   end
   def grab_media_items(commons, cat)
     commons.category_members("Category:#{cat}")
