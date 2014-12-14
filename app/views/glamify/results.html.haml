@@ -1,2 +1,5 @@
 %h1 Glamify#results
 %p Find me in app/views/glamify/results.html.haml
+
+- @suggestions_for_target.each do |sug|
+  %p= "#{sug[:article]} <-- #{sug[:media]}"
