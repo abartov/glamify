@@ -1,0 +1,3 @@
+! Rewrite to use direct database access; way too slow and query-intensive for API-side implementation, actually...
+! after rewrite, check performance and consider making it batch-based, e-mailing results or posting them on the wiki.
+
