@@ -36,7 +36,10 @@ class GlamifyController < ApplicationController
   end
   def find_media_usage(items, src, commons)
     ret = []
+    i = 0
     items.each {|item|
+      puts "#{i} images processed... #{ret.length} usages found so far." if i % 10 == 0
+      i += 1
       usage = commons.globalusage(item)
       src_articles = usage["#{src}.wikipedia.org"]
       next if src_articles.nil? # that media item isn't used in the source wiki.
@@ -48,8 +51,14 @@ class GlamifyController < ApplicationController
   end
   def make_suggestions(itempairs, src, target, mw)
     suggestions = []
+    i = 0
+    puts "#{itempairs.length} images used on #{src} Wikipedia found! :)"
     itempairs.each {|page, media|
-      target_article = mw[:src].langlinks(page)[target] # find interwiki to target if available
+      puts "#{i} images processed... #{suggestions.length} suggestions found so far." if i % 10 == 0
+      i += 1
+      ll = mw[:src].langlinks(page)
+      next if ll.nil?
+      target_article = ll[target] # find interwiki to target if available
       next if target_article.nil?
       target_images = mw[:target].images(target_article)
       raw_names = target_images.map {|t| t[t.index(':')+1..-1]} # different wikis have different localizations for the 'File:' prefix
