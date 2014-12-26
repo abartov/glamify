@@ -1,0 +1,29 @@
+# Be sure to restart your server when you modify this file.
+
+# This file maps database names and hosts for GLAMify to use
+# you will need to figure out these details according to your running environment.
+# on the Wikimedia Tool Labs environment, credentials are provided to you in
+# your tool's home directory when you create a tool.
+
+commons:
+  host: some_host_name
+  db: some_db_name
+  user: username
+  password: password
+
+# English Wikipedia
+en:
+  host: some_host_name
+  db: some_db_name
+  user: username
+  password: password
+
+# Arabic Wikipedia
+ar:
+  host: some_host_name
+  db: some_db_name
+  user: username
+  password: password
+
+# etc. per language you want to support
+
