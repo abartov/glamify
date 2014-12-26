@@ -41,6 +41,10 @@ module GlamifyLib
       puts "#{i} source pages processed... #{ret.length} target pages found so far by langlinks." if i % 10 == 0
       i += 1
       p = Dhole::Page.find_by_page_id(pid)
+      if p.nil?
+        puts "WARN: couldn't find #{src}wiki page id #{pid}. Skipping."
+        next
+      end
       target_article = p.langlinks.where(ll_lang: target).pluck(:ll_title).first # find interwiki to target if available
       next if target_article.nil?
       ret << [p.page_title, target_article, item] # src page name, target page name, media file name
