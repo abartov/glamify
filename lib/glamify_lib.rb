@@ -5,7 +5,7 @@ module GlamifyLib
   def GlamifyLib.glamify(src, target, cat)
     db_hash = read_db_hash
     db_connect(db_hash['commons'])
-    all_items = grab_media_items(cat) # SEE ALSO: http://commonscat.tumblr.com/ :)
+    all_items = grab_media_items(cat.gsub(' ','_')) # SEE ALSO: http://commonscat.tumblr.com/ :)
     used_items = find_media_usage(all_items, src)
     db_connect(db_hash[src])
     relevant_items = filter_by_langlink(used_items, src, target)
@@ -26,8 +26,11 @@ module GlamifyLib
   end
 
   def GlamifyLib.grab_media_items(cat)
-    c = Dhole::Category.find_by_cat_name(cat)
-    return c.member_files
+    puts "Grabbing media from Commons [[Category:#{cat}]]..."
+    c = Dhole::Category.find_by_cat_title(cat)
+    return [] if c.nil?
+    puts "#{c.cat_files} files in category"
+    return c.member_file_titles
   end
   def GlamifyLib.filter_by_langlink(items, src, target)
     ret = []
