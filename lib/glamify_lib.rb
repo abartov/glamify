@@ -1,21 +1,8 @@
 require 'dhole' # from dhole gem
 
 module GlamifyLib
-  include Dhole
-  
-  def read_db_hash
-    f = File.open('config/db_hash.yml', 'rb')
-    if f.nil?
-      puts "config/db_hash.yml not found!  Terminating."
-      exit
-    end
-    db_hash = YAML::load(f.read) # read DB hash
-  end
-  def db_connect(db_hash)
-    Dhole::Dhole.new('mysql',db_hash['db'],db_hash['user'],db_hash['password'],db_hash['host'])
-  end
-
-  def glamify(src, target, cat)
+  public
+  def GlamifyLib.glamify(src, target, cat)
     db_hash = read_db_hash
     db_connect(db_hash['commons'])
     all_items = grab_media_items(cat) # SEE ALSO: http://commonscat.tumblr.com/ :)
@@ -25,17 +12,30 @@ module GlamifyLib
     db_connect(db_hash[target])
     return make_suggestions(relevant_items, src, target)
   end
-  def grab_media_items(cat)
-    c = Category.find_by_cat_name(cat)
+  protected
+  def GlamifyLib.read_db_hash
+    f = File.open('config/db_hash.yml', 'rb')
+    if f.nil?
+      puts "config/db_hash.yml not found!  Terminating."
+      exit
+    end
+    db_hash = YAML::load(f.read) # read DB hash
+  end
+  def GlamifyLib.db_connect(db_hash)
+    Dhole::Dhole.new('mysql',db_hash['db'],db_hash['user'],db_hash['password'],db_hash['host'])
+  end
+
+  def GlamifyLib.grab_media_items(cat)
+    c = Dhole::Category.find_by_cat_name(cat)
     return c.member_files
   end
-  def filter_by_langlink(items, src, target)
+  def GlamifyLib.filter_by_langlink(items, src, target)
     ret = []
     i = 0
     items.each {|pid, item|
       puts "#{i} source pages processed... #{ret.length} target pages found so far by langlinks." if i % 10 == 0
       i += 1
-      p = Page.find_by_page_id(pid)
+      p = Dhole::Page.find_by_page_id(pid)
       ll = p.langlinks
       next if ll.nil?
       target_article = ll[target] # find interwiki to target if available
@@ -45,14 +45,14 @@ module GlamifyLib
     return ret
   end
   # returns an array of page-ids and media name pairs.
-  def find_media_usage(items, src)
+  def GlamifyLib.find_media_usage(items, src)
     ret = []
     i = 0
     items.each {|item|
       puts "#{i} images processed... #{ret.length} usages found so far." if i % 10 == 0
       i += 1
       escaped_name = item[item.index(':')+1..-1].gsub(' ','_')
-      img = Image.find_by_img_name(escaped_name)
+      img = Dhole::Image.find_by_img_name(escaped_name)
       next if img.nil?
       usage = img.global_usage_by_project
       src_page_ids = usage["#{src}wiki"]
@@ -63,14 +63,14 @@ module GlamifyLib
     }
     return ret
   end
-  def make_suggestions(itemtuples, src, target)
+  def GlamifyLib.make_suggestions(itemtuples, src, target)
     suggestions = []
     i = 0
     puts "#{itemtuples.length} images used on #{src} Wikipedia found! :)"
     itemtuples.each {|srcpage, targetpage, media|
       puts "#{i} images processed... #{suggestions.length} suggestions found so far." if i % 10 == 0
       i += 1
-      p = Page.find_by_page_name(targetpage)
+      p = Dhole::Page.find_by_page_name(targetpage)
       if p.nil?
         puts "WARN: couldn't find target page [[#{targetpage}]]!"
         next
