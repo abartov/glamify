@@ -22,7 +22,9 @@ module GlamifyLib
     db_hash = YAML::load(f.read) # read DB hash
   end
   def GlamifyLib.db_connect(db_hash)
+    print "connecting to #{db_hash['db']}..."
     Dhole::Dhole.new('mysql',db_hash['db'],db_hash['user'],db_hash['password'],db_hash['host'])
+    puts " connected!"
   end
 
   def GlamifyLib.grab_media_items(cat)
@@ -39,9 +41,7 @@ module GlamifyLib
       puts "#{i} source pages processed... #{ret.length} target pages found so far by langlinks." if i % 10 == 0
       i += 1
       p = Dhole::Page.find_by_page_id(pid)
-      ll = p.langlinks
-      next if ll.nil?
-      target_article = ll[target] # find interwiki to target if available
+      target_article = p.langlinks.where(ll_lang: target).pluck(:ll_title).first # find interwiki to target if available
       next if target_article.nil?
       ret << [p.page_title, target_article, item] # src page name, target page name, media file name
     }
@@ -54,8 +54,7 @@ module GlamifyLib
     items.each {|item|
       puts "#{i} images processed... #{ret.length} usages found so far." if i % 10 == 0
       i += 1
-      escaped_name = item[item.index(':')+1..-1].gsub(' ','_')
-      img = Dhole::Image.find_by_img_name(escaped_name)
+      img = Dhole::Image.find_by_img_name(item)
       next if img.nil?
       usage = img.global_usage_by_project
       src_page_ids = usage["#{src}wiki"]
@@ -73,15 +72,13 @@ module GlamifyLib
     itemtuples.each {|srcpage, targetpage, media|
       puts "#{i} images processed... #{suggestions.length} suggestions found so far." if i % 10 == 0
       i += 1
-      p = Dhole::Page.find_by_page_name(targetpage)
+      p = Dhole::Page.find_by_page_title(targetpage.gsub(' ','_'))
       if p.nil?
         puts "WARN: couldn't find target page [[#{targetpage}]]!"
         next
       end
       target_images = p.imagelinks.pluck(:il_to)
-      raw_names = target_images.map {|t| t[t.index(':')+1..-1]} # different wikis have different localizations for the 'File:' prefix
-      raw_media = media[media.index(':')+1..-1]
-      suggestions << {:article => targetpage, :media => media} unless raw_names.include?(raw_media)
+      suggestions << {:article => targetpage, :media => media} unless target_images.include?(media)
     }
     return suggestions
   end
