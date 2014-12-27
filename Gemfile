@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.1.8'
 # Use mysql as the database for Active Record
-#gem 'mysql2'
+gem 'mysql2'
 gem 'haml-rails' # HAML \o/ :)
 gem 'mediawiki-gateway' # old gem I'm used to :)
 gem 'mediawiki_api' # new, official WMF gem
