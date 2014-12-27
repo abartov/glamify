@@ -7,6 +7,8 @@ gem 'rails', '4.1.8'
 gem 'haml-rails' # HAML \o/ :)
 gem 'mediawiki-gateway' # old gem I'm used to :)
 gem 'mediawiki_api' # new, official WMF gem
+gem 'dhole' # raw DB access to Mediawiki
+
 gem 'thin'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.3'

@@ -82,7 +82,7 @@ module GlamifyLib
         next
       end
       target_images = p.imagelinks.pluck(:il_to)
-      suggestions << {:article => targetpage, :media => media} unless target_images.include?(media)
+      suggestions << {:srcpage => srcpage, :article => targetpage, :media => media} unless target_images.include?(media)
     }
     return suggestions
   end

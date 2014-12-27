@@ -1,7 +1,10 @@
 require 'mediawiki_api'
+require 'date'
+require './lib/glamify_lib'
 
 CRED = 'config/wiki_credentials.yml'
 TOOL_PAGE = 'User:Ijon/GLAMify'
+RESULTS_PAGE = 'User:Ijon/GLAMify/Results'
 REQS_SECTION = '===Current requests==='
 
 namespace :queue do
@@ -31,16 +34,27 @@ namespace :queue do
 
     # crunch!
     puts "crunch time!"
-
+    results = do_glamify(reqs)
     # output
-    spew_output(mw, reqs)
+    spew_output(mw, results)
     # yalla bye
     puts "all done! :)"
   end
 end
 
 private
-
+def do_glamify(reqs)
+  sugs = []
+  i = 0
+  tot = reqs.length
+  reqs.each {|r|
+    i += 1
+    puts "GLAMifying request #{i} of #{tot}..."
+    suggestions = GlamifyLib.glamify(r[:src], r[:target], r[:cat])
+    sugs << {request: r, suggestions: suggestions}
+  }
+  return sugs
+end
 def slurp_requests(mw)
   reqs = []
   attempts = 0
@@ -83,6 +97,22 @@ def slurp_requests(mw)
   }
   return reqs
 end
-def spew_output(mw, reqs)
+def spew_output(mw, results)
+  new_results = ''
+  results.each {|r|
+    req = r[:request]
+    sug_page = "Below are #{r[:suggestions].length} suggested images from the Commons category '''[[commons:Category:#{req[:cat]}|#{req[:cat]}]]''', some of which may be appropriate to add to the indicated articles on the '#{req[:target]}' Wikipedia, based on the fact they are used in the equivalent articles on the '#{req[:src]}' Wikipedia.\n\nThey were created by the [[User:Ijon/GLAMify|GLAMify]] tool.\n\n==Suggestions==\n"
+    r[:suggestions].each {|sug|
+      srcpage, article, media = sug[:srcpage], sug[:article], src[:media]
+      sug_page += "# [[commons:File:#{media}|#{media}]] <== [[:w:#{req[:target]}:#{article}|#{article}]] -- already used in [[:w:#{req[:src]}:#{srcpage}|#{srcpage}]]\n"
+    }
+    pagename = TOOL_PAGE+"/"+Date.today.year+"/"+Date.today.month+"/"+req[:cat]
+    mw.edit({title: pagename, text: sug_page, summary: "GLAMify results for cat '#{req[:cat]}'"}) # an edit conflict would fail the request # TODO: verify!
+    new_results += "# [[#{pagename}|#{req[:cat]} -- #{req[:src]} ==> #{req[:target]}]]\n"
+  }
+  # now append all the new pages onto the results section
+  existing_results = mw.get_wikitext(RESULTS_PAGE).body
+  mw.edit({title: RESULTS_PAGE, text: existing_results + "\n#{Date.today.to_s}\n"+new_results, summary: "GLAMify appending new results"})
+
 end
 
