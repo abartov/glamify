@@ -103,7 +103,7 @@ def spew_output(mw, results)
       srcpage, article, media = sug[:srcpage], sug[:article], sug[:media]
       sug_page += "# [[commons:File:#{media}|#{media}]] ==> [[:w:#{req[:target]}:#{article}|#{article}]] -- already used in [[:w:#{req[:src]}:#{srcpage}|#{srcpage}]]\n"
     }
-    pagename = TOOL_PAGE+"/"+Date.today.year.to_s+"/"+Date.today.month.to_s+"/"+req[:cat]
+    pagename = TOOL_PAGE+"/"+Date.today.year.to_s+"/"+Date.today.month.to_s+"/"+req[:cat]+"_#{req[:src]}_#{req[:target]}"
     mw.edit({title: pagename, text: sug_page, summary: "GLAMify results for cat '#{req[:cat]}'"}) # an edit conflict would fail the request # TODO: verify!
     new_results += "# [[#{pagename}|#{req[:cat]} -- #{req[:src]} ==> #{req[:target]}]]\n"
     # notify user
