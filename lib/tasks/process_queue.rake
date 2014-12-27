@@ -89,7 +89,8 @@ def slurp_requests(mw)
       reqs << {error: "Invalid request", req_line: r} # would be reported later
       next
     end
-    username = (req[3].nil? or req[3].empty? ? nil : req[3].strip)
+    username = nil
+    username = req[3].strip unless req[3].nil? or req[3].empty?
     reqs << {src: req[0].strip, target: req[1].strip, cat: req[2].strip, username: username}
   }
   return reqs
@@ -104,16 +105,19 @@ def spew_output(mw, results)
       sug_page += "# [[commons:File:#{media}|#{media}]] ==> [[:w:#{req[:target]}:#{article}|#{article}]] -- already used in [[:w:#{req[:src]}:#{srcpage}|#{srcpage}]]\n"
     }
     pagename = TOOL_PAGE+"/"+Date.today.year.to_s+"/"+Date.today.month.to_s+"/"+req[:cat]+"_#{req[:src]}_#{req[:target]}"
+    puts "Posting results subpage at #{pagename}"
     mw.edit({title: pagename, text: sug_page, summary: "GLAMify results for cat '#{req[:cat]}'"}) # an edit conflict would fail the request # TODO: verify!
     new_results += "# [[#{pagename}|#{req[:cat]} -- #{req[:src]} ==> #{req[:target]}]]\n"
     # notify user
     unless req[:username].nil?
-      mw.edit({title: "User:#{req[:username]}", text: "==GLAMify report ready!==\nHullo!\n\n[[User:Ijon/GLAMify|GLAMify]] has just completed a report you asked for, with suggestions for integrating media from [[commons:Category:#{req[:cat]}.\n\nThe report is [[#{pagename}|waiting for you here]]. :)  Please note that the report pages may get '''deleted''' after 60 days, so if you'd like to keep these results around, copy them somewhere else.\n\nYour faithful servant,\n\n[[User:Ijon/GLAMify|GLAMify]] #{Date.today.to_s}", summary: "GLAMify has completed a report for you! :)", section: "new"})
+      puts "Notifying user #{req[:username]}"
+      mw.edit({title: "User talk:#{req[:username]}", text: "Hullo!\n\n[[User:Ijon/GLAMify|GLAMify]] has just completed a report you asked for, with suggestions for integrating media from [[commons:Category:#{req[:cat]}.\n\nThe report is [[#{pagename}|waiting for you here]]. :)  Please note that the report pages may get '''deleted''' after 60 days, so if you'd like to keep these results around, copy them somewhere else.\n\nYour faithful servant,\n\n[[User:Ijon/GLAMify|GLAMify]] #{Date.today.to_s}", summary: "GLAMify has completed a report for you! :)", section: "new"})
     end
   }
   # now append all the new pages onto the results section, if there are any
   if results.length > 0
     existing_results = mw.get_wikitext(RESULTS_PAGE).body
+    puts "posting results to #{RESULTS_PAGE}"
     mw.edit({title: RESULTS_PAGE, text: existing_results + "\n#{Date.today.to_s}\n"+new_results, summary: "GLAMify appending new results"})
   else
     puts "no results."
