@@ -111,7 +111,7 @@ def spew_output(mw, results)
     # notify user
     unless req[:username].nil?
       puts "Notifying user #{req[:username]}"
-      mw.edit({title: "User talk:#{req[:username]}", text: "Hullo!\n\n[[User:Ijon/GLAMify|GLAMify]] has just completed a report you asked for, with suggestions for integrating media from [[commons:Category:#{req[:cat]}.\n\nThe report is [[#{pagename}|waiting for you here]]. :)  Please note that the report pages may get '''deleted''' after 60 days, so if you'd like to keep these results around, copy them somewhere else.\n\nYour faithful servant,\n\n[[User:Ijon/GLAMify|GLAMify]] #{Date.today.to_s}", summary: "GLAMify has completed a report for you! :)", section: "new"})
+      mw.edit({title: "User talk:#{req[:username]}", text: "Hullo!\n\n[[User:Ijon/GLAMify|GLAMify]] has just completed a report you asked for, with suggestions for integrating media from [[commons:Category:#{req[:cat]}]].\n\nThe report is [[#{pagename}|waiting for you here]]. :)  Please note that the report pages may get '''deleted''' after 60 days, so if you'd like to keep these results around, copy them somewhere else.\n\nYour faithful servant,\n\n[[User:Ijon/GLAMify|GLAMify]] (run on #{Date.today.to_s})", summary: "GLAMify has completed a report for you! :)", section: "new"})
     end
   }
   # now append all the new pages onto the results section, if there are any
