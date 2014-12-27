@@ -11,6 +11,7 @@
 /db/*.sqlite3
 /db/*.sqlite3-journal
 /config/db_hash.yml
+/config/wiki_credentials.yml
 
 # Ignore all logfiles and tempfiles.
 /log/*.log
