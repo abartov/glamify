@@ -25,7 +25,6 @@ namespace :queue do
 
     # input
     puts "reading requests."
-    debugger
     reqs = slurp_requests(mw)
     puts "Found the following requests:"
     reqs.each {|r|
@@ -67,8 +66,7 @@ def slurp_requests(mw)
       to = from+raw_toolpage[from..-1].index("\n==")
       # having grabbed the current page, quickly blank out the reqs section
       new_toolpage = raw_toolpage[0..from-1] + "# ..." + raw_toolpage[to..-1]
-      puts "DBG: toolpage\n#{new_toolpage}"
-      # DBG # mw.edit({title: TOOL_PAGE, text: new_toolpage, summary: 'GLAMify enqueueing requests'}) # an edit conflict would fail the request # TODO: verify!
+      mw.edit({title: TOOL_PAGE, text: new_toolpage, summary: 'GLAMify enqueueing requests'}) # an edit conflict would fail the request # TODO: verify!
       reqs_section = raw_toolpage[from..to] # cut off the current requests section
     rescue
       # give up
@@ -80,7 +78,6 @@ def slurp_requests(mw)
     end
     success = true
   end
-  debugger
   req_lines = reqs_section.split("\n")
   req_lines.each {|r|
     r.strip!
