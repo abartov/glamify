@@ -37,9 +37,16 @@ GEM
       execjs
     coffee-script-source (1.8.0)
     daemons (1.1.9)
+    domain_name (0.5.23)
+      unf (>= 0.0.5, < 1.0.0)
     erubis (2.7.0)
     eventmachine (1.0.3)
     execjs (2.2.2)
+    faraday (0.9.0)
+      multipart-post (>= 1.2, < 3)
+    faraday-cookie_jar (0.0.6)
+      faraday (>= 0.7.4)
+      http-cookie (~> 1.0.0)
     haml (4.1.0.beta.1)
       tilt
     haml-rails (0.6.0)
@@ -55,6 +62,8 @@ GEM
       haml (>= 4.0.0.rc.1)
       hpricot (~> 0.8.6)
       ruby_parser (~> 3.1.1)
+    http-cookie (1.0.2)
+      domain_name (~> 0.5)
     i18n (0.6.11)
     jbuilder (2.2.5)
       activesupport (>= 3.0.0, < 5)
@@ -67,9 +76,13 @@ GEM
       mime-types (>= 1.16, < 3)
     mediawiki-gateway (1.0.0)
       rest-client (~> 1.7)
+    mediawiki_api (0.3.0)
+      faraday (~> 0.9, >= 0.9.0)
+      faraday-cookie_jar (~> 0.0, >= 0.0.6)
     mime-types (2.4.3)
     minitest (5.4.3)
     multi_json (1.10.1)
+    multipart-post (2.0.0)
     netrc (0.10.0)
     rack (1.5.2)
     rack-test (0.6.2)
@@ -131,6 +144,9 @@ GEM
     uglifier (2.6.0)
       execjs (>= 0.3.0)
       json (>= 1.8.0)
+    unf (0.1.4)
+      unf_ext
+    unf_ext (0.0.6)
 
 PLATFORMS
   ruby
@@ -141,6 +157,7 @@ DEPENDENCIES
   jbuilder (~> 2.0)
   jquery-rails
   mediawiki-gateway
+  mediawiki_api
   rails (= 4.1.8)
   sass-rails (~> 4.0.3)
   sdoc (~> 0.4.0)

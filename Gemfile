@@ -5,7 +5,8 @@ gem 'rails', '4.1.8'
 # Use mysql as the database for Active Record
 #gem 'mysql2'
 gem 'haml-rails' # HAML \o/ :)
-gem 'mediawiki-gateway'
+gem 'mediawiki-gateway' # old gem I'm used to :)
+gem 'mediawiki_api' # new, official WMF gem
 gem 'thin'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.3'
