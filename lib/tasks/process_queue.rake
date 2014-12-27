@@ -100,10 +100,10 @@ def spew_output(mw, results)
     req = r[:request]
     sug_page = "Below are #{r[:suggestions].length} suggested images from the Commons category '''[[commons:Category:#{req[:cat]}|#{req[:cat]}]]''', some of which may be appropriate to add to the indicated articles on the '#{req[:target]}' Wikipedia, based on the fact they are used in the equivalent articles on the '#{req[:src]}' Wikipedia.\n\nThey were created by the [[User:Ijon/GLAMify|GLAMify]] tool.\n\n==Suggestions==\n"
     r[:suggestions].each {|sug|
-      srcpage, article, media = sug[:srcpage], sug[:article], src[:media]
-      sug_page += "# [[commons:File:#{media}|#{media}]] <== [[:w:#{req[:target]}:#{article}|#{article}]] -- already used in [[:w:#{req[:src]}:#{srcpage}|#{srcpage}]]\n"
+      srcpage, article, media = sug[:srcpage], sug[:article], sug[:media]
+      sug_page += "# [[commons:File:#{media}|#{media}]] ==> [[:w:#{req[:target]}:#{article}|#{article}]] -- already used in [[:w:#{req[:src]}:#{srcpage}|#{srcpage}]]\n"
     }
-    pagename = TOOL_PAGE+"/"+Date.today.year+"/"+Date.today.month+"/"+req[:cat]
+    pagename = TOOL_PAGE+"/"+Date.today.year.to_s+"/"+Date.today.month.to_s+"/"+req[:cat]
     mw.edit({title: pagename, text: sug_page, summary: "GLAMify results for cat '#{req[:cat]}'"}) # an edit conflict would fail the request # TODO: verify!
     new_results += "# [[#{pagename}|#{req[:cat]} -- #{req[:src]} ==> #{req[:target]}]]\n"
   }
