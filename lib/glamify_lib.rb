@@ -23,7 +23,7 @@ module GlamifyLib
   end
   def GlamifyLib.db_connect(db_hash)
     print "connecting to #{db_hash['db']}..."
-    Dhole::Dhole.new('mysql',db_hash['db'],db_hash['user'],db_hash['password'],db_hash['host'])
+    Dhole::Dhole.new('mysql2',db_hash['db'],db_hash['user'],db_hash['password'],db_hash['host'])
     puts " connected!"
   end
 

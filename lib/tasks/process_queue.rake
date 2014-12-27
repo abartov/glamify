@@ -107,9 +107,13 @@ def spew_output(mw, results)
     mw.edit({title: pagename, text: sug_page, summary: "GLAMify results for cat '#{req[:cat]}'"}) # an edit conflict would fail the request # TODO: verify!
     new_results += "# [[#{pagename}|#{req[:cat]} -- #{req[:src]} ==> #{req[:target]}]]\n"
   }
-  # now append all the new pages onto the results section
-  existing_results = mw.get_wikitext(RESULTS_PAGE).body
-  mw.edit({title: RESULTS_PAGE, text: existing_results + "\n#{Date.today.to_s}\n"+new_results, summary: "GLAMify appending new results"})
+  # now append all the new pages onto the results section, if there are any
+  if results.length > 0
+    existing_results = mw.get_wikitext(RESULTS_PAGE).body
+    mw.edit({title: RESULTS_PAGE, text: existing_results + "\n#{Date.today.to_s}\n"+new_results, summary: "GLAMify appending new results"})
+  else
+    puts "no results."
+  end
 
 end
 
