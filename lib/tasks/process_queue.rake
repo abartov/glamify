@@ -4,6 +4,7 @@ require './lib/glamify_lib'
 
 CRED = 'config/wiki_credentials.yml'
 TOOL_PAGE = 'User:Ijon/GLAMify'
+REQS_PAGE = 'User:Ijon/GLAMify/Requests'
 RESULTS_PAGE = 'User:Ijon/GLAMify/Results'
 REQS_SECTION = '===Current requests==='
 
@@ -61,13 +62,9 @@ def slurp_requests(mw)
   until success do
     begin
       attempts += 1
-      raw_toolpage = mw.get_wikitext(TOOL_PAGE).body
-      from = raw_toolpage.index(REQS_SECTION)+REQS_SECTION.length+1
-      to = from+raw_toolpage[from..-1].index("\n==")
+      reqs_wikitext = mw.get_wikitext(REQS_PAGE).body
       # having grabbed the current page, quickly blank out the reqs section
-      new_toolpage = raw_toolpage[0..from-1] + "# ..." + raw_toolpage[to..-1]
-      mw.edit({title: TOOL_PAGE, text: new_toolpage, summary: 'GLAMify enqueueing requests'}) # an edit conflict would fail the request # TODO: verify!
-      reqs_section = raw_toolpage[from..to] # cut off the current requests section
+      mw.edit({title: REQS_PAGE, text: '# ...', summary: 'GLAMify processing requests'}) # an edit conflict would fail the request # TODO: verify!
     rescue
       # give up
       if attempts > 3
@@ -78,7 +75,7 @@ def slurp_requests(mw)
     end
     success = true
   end
-  req_lines = reqs_section.split("\n")
+  req_lines = reqs_wikitext.split("\n")
   req_lines.each {|r|
     r.strip!
     next if (r.empty?) or (r.index(';') == nil) or (r == '# ...') # skip sample line
@@ -93,6 +90,12 @@ def slurp_requests(mw)
     username = req[3].strip unless req[3].nil? or req[3].empty?
     reqs << {src: req[0].strip, target: req[1].strip, cat: req[2].strip, username: username}
   }
+  if reqs.length > 7 # why 7? shall we say, the seven liberal arts?
+    remainder = ''
+    reqs[7..-1].each {|r| remainder += "# #{r[:src]}; #{r[:target]}; #{r[:cat]}; #{r[:username]}\n" }
+    mw.edit({title: REQS_PAGE, text: remainder+"# ...\n", summary: 'GLAMify requeuing overflow requests for next run'}) # an edit conflict would fail the request # TODO: verify!
+    reqs = reqs[0..6]
+  end
   return reqs
 end
 def spew_output(mw, results)
@@ -107,12 +110,14 @@ def spew_output(mw, results)
     pagename = TOOL_PAGE+"/"+Date.today.year.to_s+"/"+Date.today.month.to_s+"/"+req[:cat]+"_#{req[:src]}_#{req[:target]}"
     puts "Posting results subpage at #{pagename}"
     mw.edit({title: pagename, text: sug_page, summary: "GLAMify results for cat '#{req[:cat]}'"}) # an edit conflict would fail the request # TODO: verify!
-    new_results += "# [[#{pagename}|#{req[:cat]} -- #{req[:src]} ==> #{req[:target]}]]\n"
+    new_results += "# [[#{pagename}|#{req[:cat]} -- #{req[:src]} ==> #{req[:target]}]]"
     # notify user
     unless req[:username].nil?
+      new_results += " (for [[User:#{req[:username]}|#{req[:username]}]])"
       puts "Notifying user #{req[:username]}"
       mw.edit({title: "User talk:#{req[:username]}", text: "Hullo!\n\n[[User:Ijon/GLAMify|GLAMify]] has just completed a report you asked for, with suggestions for integrating media from [[commons:Category:#{req[:cat]}]].\n\nThe report is [[#{pagename}|waiting for you here]]. :)  Please note that the report pages may get '''deleted''' after 60 days, so if you'd like to keep these results around, copy them somewhere else.\n\nYour faithful servant,\n\n[[User:Ijon/GLAMify|GLAMify]] (run on #{Date.today.to_s})", summary: "GLAMify has completed a report for you! :)", section: "new"})
     end
+    new_results += "\n"
   }
   # now append all the new pages onto the results section, if there are any
   if results.length > 0
