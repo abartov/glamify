@@ -5,3 +5,4 @@ This tool allows you to pick a category of media on the Wikimedia Commons, and a
 
 In other words, it allows a wiki to follow the lead of another wiki in integrating media in articles, and saves the user tedious clicking around to find applicable articles and suitable media.  Particularly useful in smaller wikis and/or facing large media categories (e.g. "GLAM" media donations).
 
+To see it running, go to https://meta.wikimedia.org/wiki/User:Ijon/GLAMify
