@@ -64,7 +64,7 @@ def slurp_requests(mw)
       attempts += 1
       reqs_wikitext = mw.get_wikitext(REQS_PAGE).body
       # having grabbed the current page, quickly blank out the reqs section
-      mw.edit({title: REQS_PAGE, text: '# ...', summary: 'GLAMify processing requests'}) # an edit conflict would fail the request # TODO: verify!
+      mw.edit({title: REQS_PAGE, text: '# ...', summary: 'GLAMify processing requests', bot: 'true'}) # an edit conflict would fail the request # TODO: verify!
     rescue
       # give up
       if attempts > 3
@@ -93,7 +93,7 @@ def slurp_requests(mw)
   if reqs.length > 7 # why 7? shall we say, the seven liberal arts?
     remainder = ''
     reqs[7..-1].each {|r| remainder += "# #{r[:src]}; #{r[:target]}; #{r[:cat]}; #{r[:username]}\n" }
-    mw.edit({title: REQS_PAGE, text: remainder+"# ...\n", summary: 'GLAMify requeuing overflow requests for next run'}) # an edit conflict would fail the request # TODO: verify!
+    mw.edit({title: REQS_PAGE, text: remainder+"# ...\n", summary: 'GLAMify requeuing overflow requests for next run', bot: 'true'}) # an edit conflict would fail the request # TODO: verify!
     reqs = reqs[0..6]
   end
   return reqs
@@ -109,13 +109,13 @@ def spew_output(mw, results)
     }
     pagename = TOOL_PAGE+"/"+Date.today.year.to_s+"/"+Date.today.month.to_s+"/"+req[:cat]+"_#{req[:src]}_#{req[:target]}"
     puts "Posting results subpage at #{pagename}"
-    mw.edit({title: pagename, text: sug_page, summary: "GLAMify results for cat '#{req[:cat]}'"}) # an edit conflict would fail the request # TODO: verify!
+    mw.edit({title: pagename, text: sug_page, summary: "GLAMify results for cat '#{req[:cat]}'", bot: 'true'}) # an edit conflict would fail the request # TODO: verify!
     new_results += "# [[#{pagename}|#{req[:cat]} -- #{req[:src]} ==> #{req[:target]}]]"
     # notify user
     unless req[:username].nil?
       new_results += " (for [[User:#{req[:username]}|#{req[:username]}]])"
       puts "Notifying user #{req[:username]}"
-      mw.edit({title: "User talk:#{req[:username]}", text: "Hullo!\n\n[[User:Ijon/GLAMify|GLAMify]] has just completed a report you asked for, with suggestions for integrating media from [[commons:Category:#{req[:cat]}]].\n\nThe report is [[#{pagename}|waiting for you here]]. :)  Please note that the report pages may get '''deleted''' after 60 days, so if you'd like to keep these results around, copy them somewhere else.\n\nYour faithful servant,\n\n~~~~", summary: "GLAMify has completed a report for you! :)", section: "new"})
+      mw.edit({title: "User talk:#{req[:username]}", text: "Hullo!\n\n[[User:Ijon/GLAMify|GLAMify]] has just completed a report you asked for, with suggestions for integrating media from [[commons:Category:#{req[:cat]}]].\n\nThe report is [[#{pagename}|waiting for you here]]. :)  Please note that the report pages may get '''deleted''' after 60 days, so if you'd like to keep these results around, copy them somewhere else.\n\nYour faithful servant,\n\n~~~~", summary: "GLAMify has completed a report for you! :)", section: "new", bot: 'true'})
     end
     new_results += "\n"
   }
@@ -123,7 +123,7 @@ def spew_output(mw, results)
   if results.length > 0
     existing_results = mw.get_wikitext(RESULTS_PAGE).body
     puts "posting results to #{RESULTS_PAGE}"
-    mw.edit({title: RESULTS_PAGE, text: existing_results + "\n#{Date.today.to_s}\n"+new_results, summary: "GLAMify appending new results"})
+    mw.edit({title: RESULTS_PAGE, text: existing_results + "\n#{Date.today.to_s}\n"+new_results, summary: "GLAMify appending new results", bot: 'true'})
   else
     puts "no results."
   end
