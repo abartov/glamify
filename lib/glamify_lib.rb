@@ -24,7 +24,7 @@ module GlamifyLib
   def GlamifyLib.db_connect(db_hash, lang_iso)
     if db_hash[lang_iso].nil?
       db = lang_iso+'wiki_p'
-      k = db.keys.first # default to other params from whatever IS in the config file (a safe assumption on the Wikimedia Tool Labs cluster)a
+      k = db_hash.keys.first # default to other params from whatever IS in the config file (a safe assumption on the Wikimedia Tool Labs cluster)a
     else
       db = db_hash[lang_iso]['db']
       k = lang_iso
