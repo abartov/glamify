@@ -4,12 +4,12 @@ module GlamifyLib
   public
   def GlamifyLib.glamify(src, target, cat)
     db_hash = read_db_hash
-    db_connect(db_hash['commons'])
+    db_connect(db_hash, 'commons')
     all_items = grab_media_items(cat.gsub(' ','_')) # SEE ALSO: http://commonscat.tumblr.com/ :)
     used_items = find_media_usage(all_items, src)
-    db_connect(db_hash[src])
+    db_connect(db_hash, src)
     relevant_items = filter_by_langlink(used_items, src, target)
-    db_connect(db_hash[target])
+    db_connect(db_hash, target)
     return make_suggestions(relevant_items, src, target)
   end
   protected
@@ -21,9 +21,20 @@ module GlamifyLib
     end
     db_hash = YAML::load(f.read) # read DB hash
   end
-  def GlamifyLib.db_connect(db_hash)
-    print "connecting to #{db_hash['db']}..."
-    Dhole::Dhole.new('mysql2',db_hash['db'],db_hash['user'],db_hash['password'],db_hash['host'])
+  def GlamifyLib.db_connect(db_hash, lang_iso)
+    if db_hash[lang_iso].nil?
+      db = lang_iso+'wiki_p'
+      k = db.keys.first # default to other params from whatever IS in the config file (a safe assumption on the Wikimedia Tool Labs cluster)a
+    else
+      db = db_hash[lang_iso]['db']
+      k = lang_iso
+    end
+    user = db_hash[k]['user']
+    passwd = db_hash[k]['password']
+    host = db_hash[k]['host']
+
+    print "connecting to #{db}..."
+    Dhole::Dhole.new('mysql2', db, user, passwd, host)
     puts " connected!"
   end
 
