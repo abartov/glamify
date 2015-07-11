@@ -1,0 +1,9 @@
+{
+    "name" : "glamify",
+    "title" : "GLAMify",
+    "description" : "media suggester by Commons category and usage elsewhere",
+    "url" : "https://meta.wikimedia.org/wiki/User:Ijon/GLAMify",
+    "keywords" : "commons, media, images, reuse, photos, GLAM, discoverability",
+    "author" : "Asaf Bartov",
+    "repository" : "https://github.com/abartov/glamify"
+}
